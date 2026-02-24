@@ -170,16 +170,11 @@ class HapticsGUI:
         for i in range(2):
             self.add_output()
     
-    def add_output(self):
-        """Add a new haptics output"""
-        output_id = len(self.outputs)
-        output = HapticsOutput(output_id)
-        self.outputs.append(output)
-        
-        # Create frame for this output
+    def create_output_frame(self, output, row_index):
+        """Create GUI frame for an output"""
         output_frame = ttk.LabelFrame(self.scrollable_frame, 
-                                      text=f"Output {output_id}", padding="10")
-        output_frame.grid(row=output_id, column=0, sticky=(tk.W, tk.E), pady=5, padx=5)
+                                      text=f"Output {output.output_id}", padding="10")
+        output_frame.grid(row=row_index, column=0, sticky=(tk.W, tk.E), pady=5, padx=5)
         
         # Device IP
         ttk.Label(output_frame, text="Device IP:").grid(row=0, column=0, sticky=tk.W)
@@ -196,7 +191,7 @@ class HapticsGUI:
         ttk.Entry(output_frame, textvariable=output.osc_path, width=40).grid(
             row=1, column=1, columnspan=3, sticky=tk.W, padx=5, pady=5)
         
-        # Test button
+        # Test buttons
         ttk.Button(output_frame, text="Test (100ms)", 
                   command=lambda o=output: self.test_output(o, 100)).grid(
             row=2, column=0, padx=5, pady=5)
@@ -207,18 +202,32 @@ class HapticsGUI:
                   command=lambda o=output: self.test_output(o, 1000)).grid(
             row=2, column=2, padx=5, pady=5)
         ttk.Button(output_frame, text="Remove", 
-                  command=lambda: self.remove_output(output_id, output_frame),
+                  command=lambda o=output, f=output_frame: self.remove_output(o, f),
                   style='Danger.TButton').grid(
             row=2, column=3, padx=5, pady=5)
+        
+        return output_frame
     
-    def remove_output(self, output_id, frame):
+    def add_output(self):
+        """Add a new haptics output"""
+        output_id = len(self.outputs)
+        output = HapticsOutput(output_id)
+        self.outputs.append(output)
+        
+        # Create GUI frame for this output
+        self.create_output_frame(output, output_id)
+    
+    def remove_output(self, output, frame):
         """Remove an output"""
         if len(self.outputs) <= 1:
             messagebox.showwarning("Warning", "You must have at least one output")
             return
         
-        # Remove the output
-        self.outputs = [o for o in self.outputs if o.output_id != output_id]
+        # Remove the output from the list
+        if output in self.outputs:
+            self.outputs.remove(output)
+        
+        # Destroy the GUI frame
         frame.destroy()
     
     def test_output(self, output, duration_ms):
@@ -336,35 +345,8 @@ class HapticsGUI:
                     output.from_dict(output_data)
                     self.outputs.append(output)
                     
-                    # Create GUI for output
-                    output_frame = ttk.LabelFrame(self.scrollable_frame, 
-                                                  text=f"Output {i}", padding="10")
-                    output_frame.grid(row=i, column=0, sticky=(tk.W, tk.E), pady=5, padx=5)
-                    
-                    ttk.Label(output_frame, text="Device IP:").grid(row=0, column=0, sticky=tk.W)
-                    ttk.Entry(output_frame, textvariable=output.device_ip, width=20).grid(
-                        row=0, column=1, sticky=tk.W, padx=5)
-                    
-                    ttk.Label(output_frame, text="Port:").grid(row=0, column=2, sticky=tk.W, padx=(20, 0))
-                    ttk.Entry(output_frame, textvariable=output.device_port, width=10).grid(
-                        row=0, column=3, sticky=tk.W, padx=5)
-                    
-                    ttk.Label(output_frame, text="OSC Path:").grid(row=1, column=0, sticky=tk.W)
-                    ttk.Entry(output_frame, textvariable=output.osc_path, width=40).grid(
-                        row=1, column=1, columnspan=3, sticky=tk.W, padx=5, pady=5)
-                    
-                    ttk.Button(output_frame, text="Test (100ms)", 
-                              command=lambda o=output: self.test_output(o, 100)).grid(
-                        row=2, column=0, padx=5, pady=5)
-                    ttk.Button(output_frame, text="Test (500ms)", 
-                              command=lambda o=output: self.test_output(o, 500)).grid(
-                        row=2, column=1, padx=5, pady=5)
-                    ttk.Button(output_frame, text="Test (1000ms)", 
-                              command=lambda o=output: self.test_output(o, 1000)).grid(
-                        row=2, column=2, padx=5, pady=5)
-                    ttk.Button(output_frame, text="Remove", 
-                              command=lambda idx=i, frm=output_frame: self.remove_output(idx, frm)).grid(
-                        row=2, column=3, padx=5, pady=5)
+                    # Create GUI for output using helper method
+                    self.create_output_frame(output, i)
             
             print("Configuration loaded")
         except Exception as e:

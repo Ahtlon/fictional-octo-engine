@@ -6,7 +6,6 @@ Validates packet structure and basic functionality
 
 import struct
 import sys
-import os
 
 
 class HapticsOutput:
