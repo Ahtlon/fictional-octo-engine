@@ -1,0 +1,23 @@
+{
+  "osc_port": 9001,
+  "outputs": [
+    {
+      "device_ip": "127.0.0.1",
+      "device_port": 6969,
+      "osc_path": "/avatar/parameters/leftPawTouched",
+      "packet_id": [0, 0, 0]
+    },
+    {
+      "device_ip": "127.0.0.1",
+      "device_port": 6970,
+      "osc_path": "/avatar/parameters/rightPawTouched",
+      "packet_id": [0, 0, 0]
+    },
+    {
+      "device_ip": "192.168.1.100",
+      "device_port": 6969,
+      "osc_path": "/avatar/parameters/headTouch",
+      "packet_id": [0, 0, 0]
+    }
+  ]
+}
