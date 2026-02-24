@@ -52,6 +52,34 @@ python osc_haptics_gui.py
 5. **Save/Load Configuration**:
    - Click "Save Config" to save your current configuration to `haptics_config.json`
    - Click "Load Config" to load a previously saved configuration
+   - An example configuration file is provided as `haptics_config.example.json`
+
+## Example Configuration
+
+See `haptics_config.example.json` for an example configuration file with multiple outputs configured for VRChat avatar parameters.
+
+## Testing
+
+### Packet Structure Tests
+
+Run the packet structure validation tests:
+```bash
+python test_packets.py
+```
+
+This validates that the UDP packets are correctly formatted according to the SlimeVR specification.
+
+### OSC Client Test
+
+To test the OSC server functionality, first start the GUI application and start the OSC server, then run:
+```bash
+python test_osc_client.py
+```
+
+This will send test OSC messages to the haptics converter. You can specify a different IP/port:
+```bash
+python test_osc_client.py --ip 127.0.0.1 --port 9001
+```
 
 ## UDP Packet Structure
 
